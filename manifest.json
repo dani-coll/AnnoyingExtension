@@ -1,0 +1,16 @@
+{
+    "manifest_version": 2,
+  
+    "name": "AnnoyingExtension",
+    "description": "This extension disturbs the user by making him think it has dust, a bug or a scratch in his screen",
+    "version": "1.0",
+  
+    "browser_action": {
+      "default_icon": "icon.png",
+      "default_popup": "popup.html"
+    },
+    "permissions": [
+      "activeTab",
+      "storage"
+    ]
+  }
