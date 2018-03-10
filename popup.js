@@ -1,4 +1,4 @@
-const dotStyleScript = "dot.style = \"background-color: red; width: 1px; height: 1px; display: block; position: fixed; z-index: 900;"
+const dotStyleScript = "dot.style = \"background-color: #BBB; width: 1px; height: 1px; display: block; position: fixed; z-index: 900;"
 const appendDotScript = "document.getElementsByTagName(\"BODY\")[0].appendChild(dot)"
 const getWindowHeightScript = "window.innerHeight"
 const createDotScript = "var dot = document.createElement('div')"
@@ -24,13 +24,15 @@ function styleDot(topPx, leftPx) {
   return dotStyleScript + "top: " + topPx + "px;left: " + leftPx + "px;\""
 }
 
+
+//TO DO: Generate multiple branches at the same time using different variables for each thread
 function generateScratch(isTree, direction, leftStart, topStart, callback) { 
   let mDirection = direction ? direction : treeDirection.top
   let leftPx = leftStart ? leftStart : 0
   let topDiff = 0
-  let timer = setInterval( function() {
+  let timer = setInterval( () => {
     let script = createDotScript
-      runScript(script, (a) => {
+      runScript(script, () => {
         script = getWindowHeightScript
         runScript(script, (height) => {
           topPx = topStart ? topStart - topDiff : (height * 4 / 5 - topDiff)
@@ -49,10 +51,7 @@ function generateScratch(isTree, direction, leftStart, topStart, callback) {
                 clearInterval(timer)
                 if(isTree && topPx > 0) {
                   generateScratch(isTree, treeDirection.top, leftPx, topPx, generateScratch.bind(this, isTree, treeDirection.right, leftPx, topPx, callback))
-                } else {
-                  if(callback) callback()
-                }
-                
+                } else if(callback) callback()
               } 
             })
           })
@@ -62,7 +61,17 @@ function generateScratch(isTree, direction, leftStart, topStart, callback) {
 }
 
 function hideRandomElements() {
-
+  let interval = setInterval( () => {
+    let script = "var allElements = document.getElementsByTagName(\"*\")"
+    runScript(script, () => {
+      script = "allElements.length"
+      runScript(script, (elementsLength) => {
+        let randomNumber = getRandomNumber(elementsLength)
+        script = "allElements[" + randomNumber + "].style.opacity = '0'"
+        runScript(script)
+      })
+    })
+  }, 1000)
 }
 
 
