@@ -1,16 +1,23 @@
 {
     "manifest_version": 2,
-  
     "name": "AnnoyingExtension",
-    "description": "This extension disturbs the user by making him think it has dust, a bug or a scratch in his screen",
+    "description": "This extension disturbs the user by making him crazy thinking it has dust, scratch in his screen or his browser is not working properly",
     "version": "1.0",
   
     "browser_action": {
       "default_icon": "icon.png",
       "default_popup": "popup.html"
     },
+    "content_scripts": [
+      {
+        "matches": ["https://*.google.es/*"],
+        "js": ["disturb.js","content-script.js"]
+      }
+    ],
+
     "permissions": [
       "activeTab",
-      "storage"
+      "storage",
+      "tabs"
     ]
   }
