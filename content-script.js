@@ -1,4 +1,3 @@
-console.log("holi")
 isExtensionScope = false
 var dot
 chrome.storage.sync.get((items) => {

@@ -6,8 +6,6 @@ const elementsLengthScript = "allElements.length"
 const createAllElements = "allElements = document.getElementsByTagName(\"*\")"
 const createDotScript = "dot = document.createElement('div')"
 
-const maxTopDiff = 150
-
 const treeDirection = {
   top: 1,
   right: 2
@@ -38,9 +36,11 @@ function styleDot(topPx, leftPx) {
 
 //TO DO: Generate multiple branches at the same time using different variables for each thread
 function generateScratch(isTree, direction, leftStart, topStart, callback) { 
+  let maxIterations = 70
   let mDirection = direction ? direction : treeDirection.top
   let leftPx = leftStart ? leftStart : 0
   let topDiff = 0
+  let iteration = 0
   let timer = setInterval( () => {
     let script = isExtensionScope ? "var " + createDotScript : createDotScript
       runScript(script, () => {
@@ -53,14 +53,14 @@ function generateScratch(isTree, direction, leftStart, topStart, callback) {
             runScript(script, () => {
               if(mDirection === treeDirection.top) {
                 if(getRandomNumber(3)%3 == 0) leftPx++;
-                topDiff += 2
-              } else {
-                if(getRandomNumber(3)%3 == 0) topDiff++;
-                leftPx += 2;
-              }
+                  topDiff += 2
+              } else if(getRandomNumber(3)%3 == 0) {
+                  topDiff++;
+                  leftPx += 2;
+              } 
+              iteration++
               if(
-                    topDiff > maxTopDiff || 
-                    (mDirection === treeDirection.right && topDiff > maxTopDiff/2) 
+                    iteration > maxIterations
                     || topPx < 0
                 ) {
                 clearInterval(timer)
@@ -82,21 +82,28 @@ function generateScratch(isTree, direction, leftStart, topStart, callback) {
 }
 
 function hideRandomElements() {
-  let interval = setInterval( () => {
+  let maxIterations = 200
+  let iteration = 0
+  let hideInterval = setInterval( () => {
     let script = isExtensionScope ? "var " + createAllElements : createAllElements
     runScript(script, () => {
       script = !isExtensionScope ? "return " + elementsLengthScript : elementsLengthScript
       runScript(script, (elementsLength) => {
         let randomNumber = getRandomNumber(elementsLength)
         script = "allElements[" + randomNumber + "].style.opacity = '0'"
-        runScript(script)
+        runScript(script, () => {
+          ++iteration
+          if(iteration > maxIterations) clearInterval(hideInterval)
+        })
       })
     })
   }, 1000)
 }
 
 function generateDots() {
-  setInterval( () => {
+  let maxIterations = 100
+  let iteration = 0
+  let dotInterval = setInterval( () => {
     let script = createDotScript
     runScript(script, () => {
       script = !isExtensionScope ? "return " + getWindowWidthScript : getWindowWidthScript
@@ -108,7 +115,10 @@ function generateDots() {
           script = styleDot(topPx, leftPx)
           runScript(script, () => {
             script = appendDotScript
-            runScript(script)
+            runScript(script, () => {
+              ++iteration
+              if(iteration > maxIterations) clearInterval(dotInterval)
+            })
           })
         })
       })
